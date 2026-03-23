@@ -24,9 +24,7 @@
     @keyframes maskBob  { 0%,100%{transform:translateY(0) scale(1) rotate(var(--r,0deg))}50%{transform:translateY(-10px) scale(1.03) rotate(var(--r,0deg))} }
     @keyframes shimmer  { 0%{background-position:200% center}100%{background-position:-200% center} }
     @keyframes pulse    { 0%,100%{opacity:1}50%{opacity:0.5} }
-    /* Eye blink — scaleY 1→0→1 */
     @keyframes logoShake { 0%,100%{transform:rotate(0deg) scale(1)}15%{transform:rotate(-6deg) scale(1.06)}30%{transform:rotate(5deg) scale(1.04)}45%{transform:rotate(-4deg) scale(1.05)}60%{transform:rotate(3deg) scale(1.03)}75%{transform:rotate(-2deg) scale(1.02)}90%{transform:rotate(1deg) scale(1.01)} }
-    /* Premium dual-tone gradient for 69 $BILL */
     @keyframes dualShimmer { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
 
     /* ── LAYOUT ── */
@@ -34,7 +32,7 @@
     .page { display:none; width:100%; height:100%; }
     .page.active { display:flex; }
 
-    /* ── LEFT PANEL — premium sky blue ── */
+    /* ── LEFT PANEL ── */
     .left {
       width:52%; height:100vh;
       background: linear-gradient(160deg, var(--sky3) 0%, var(--sky2) 40%, var(--sky1) 100%);
@@ -42,7 +40,6 @@
       padding:36px 52px 36px; position:relative;
       overflow-y:auto; overflow-x:hidden;
     }
-    /* Soft radial glow blobs */
     .left::before {
       content:''; position:absolute;
       width:500px; height:500px; border-radius:50%;
@@ -55,7 +52,6 @@
       background:radial-gradient(circle, rgba(99,130,255,0.06) 0%, transparent 65%);
       bottom:-80px; right:-60px; pointer-events:none;
     }
-    /* Dot grid */
     .left-grid {
       position:absolute; inset:0; pointer-events:none;
       background-image:radial-gradient(rgba(0,70,255,0.07) 1.5px, transparent 1.5px);
@@ -70,7 +66,6 @@
       display:flex; align-items:center; justify-content:center;
       position:relative; overflow:hidden; flex-shrink:0;
     }
-    /* Subtle grid on right */
     .right::before {
       content:''; position:absolute; inset:0; pointer-events:none;
       background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
@@ -78,15 +73,7 @@
       background-size: 48px 48px;
     }
 
-    /* ── BILLIONS MASK GRID ── */
-    .mask-grid {
-      position:absolute; inset:-30px;
-      display:grid; grid-template-columns:repeat(3,1fr);
-      gap:12px; padding:12px;
-      transform:rotate(-6deg) scale(1.1);
-      pointer-events:none;
-    }
-    /* ── BILLIONS MASK GRID ── */
+    /* ── MASK GRID ── */
     .mask-grid {
       position:absolute; inset:-20px;
       display:grid; grid-template-columns:repeat(3,1fr);
@@ -94,7 +81,6 @@
       transform:rotate(-6deg) scale(1.12);
       pointer-events:none; align-content:center;
     }
-    /* Each cell IS the mask shape — no square, no border-radius box */
     .mask-cell {
       aspect-ratio:200/125;
       display:flex; align-items:center; justify-content:center;
@@ -149,7 +135,7 @@
       font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
     }
 
-    /* ── HERO LAYOUT — fills full height, proper spacing ── */
+    /* ── HERO LAYOUT ── */
     .hero-nav-wrap { flex-shrink:0; }
     .hero-main-wrap {
       flex:1; display:flex; flex-direction:column;
@@ -157,7 +143,7 @@
       padding:0;
     }
 
-    /* ── PREMIUM ELIGIBLE CARD OVERHAUL ── */
+    /* ── ELIGIBLE CARD ── */
     .r-elig {
       background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(238,244,255,0.9)) !important;
       border: 1px solid rgba(0,70,255,0.12) !important;
@@ -166,7 +152,6 @@
       overflow: hidden;
       position: relative;
     }
-    /* Glow accent top */
     .r-elig::before {
       content: '';
       position: absolute; top: 0; left: 0; right: 0; height: 3px;
@@ -202,30 +187,28 @@
       animation:dualShimmer 3.5s ease infinite;
       filter:drop-shadow(0 0 24px rgba(139,92,246,0.45)) drop-shadow(0 0 8px rgba(14,165,233,0.3));
     }
-    /* "Hey @handle" line */
     .elig-handle-line {
       font-size:18px; font-weight:700;
       color:#0040CC; margin-top:24px;
       letter-spacing:-0.3px;
     }
     .elig-handle-line span { color:#0EA5E9; }
-    /* "You are now eligible" */
     .elig-msg {
       font-size:15px; color:#0040CC; font-weight:700;
       margin:2px 0 0; letter-spacing:-0.1px;
     }
-    /* "Congrats" */
     .elig-life {
       font-size:14px; color:#374151; font-weight:500;
       margin-top:12px; line-height:1.6;
     }
-    /* Twitter CTA redesign */
+
+    /* Twitter + Dev CTA boxes */
     .tw-cta {
       background: rgba(0,70,255,0.04);
       border-radius: 16px; padding:20px 22px;
       border: 1px solid rgba(0,70,255,0.1);
       display:flex; align-items:center; justify-content:space-between;
-      gap:14px; flex-wrap:wrap;
+      gap:14px; flex-wrap:wrap; margin-bottom:12px;
     }
     .tw-cta h4 { font-size:13.5px; font-weight:700; color:var(--dark); margin-bottom:4px; }
     .tw-cta p { font-size:12px; color:var(--muted); }
@@ -233,11 +216,29 @@
       background: var(--dark); color:white; text-decoration:none;
       padding:12px 24px; border-radius:100px; font-size:13px;
       font-weight:700; font-family:'DM Sans',sans-serif;
-      white-space:nowrap; display:inline-block; cursor:pointer;
+      white-space:nowrap; display:inline-flex; align-items:center; gap:10px; cursor:pointer;
       border:none; transition:all 0.25s;
       box-shadow:0 4px 16px rgba(0,0,0,0.15);
     }
     .btn-tw:hover { background:var(--blue); box-shadow:0 8px 28px rgba(0,70,255,0.35); transform:translateY(-1px); }
+
+    /* Dev CTA box */
+    .dev-cta {
+      background: rgba(0,70,255,0.04);
+      border-radius: 16px; padding:20px 22px;
+      border: 1px solid rgba(0,70,255,0.1);
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; flex-wrap:wrap;
+    }
+    .dev-cta-left { display:flex; align-items:center; gap:14px; }
+    .dev-avatar {
+      width:44px; height:44px; border-radius:50%;
+      border:2px solid rgba(0,70,255,0.2);
+      object-fit:cover; flex-shrink:0;
+      background: linear-gradient(135deg, #0046FF, #6366F1);
+    }
+    .dev-cta h4 { font-size:13.5px; font-weight:700; color:var(--dark); margin-bottom:4px; }
+    .dev-cta p { font-size:12px; color:var(--muted); }
 
     /* ── HERO TYPOGRAPHY ── */
     .hero-label {
@@ -282,7 +283,6 @@
     .copyright { font-size:11px; color:#b0bcd8; margin-top:22px; }
 
     /* ── CHECKER LAYOUT ── */
-    /* Left fills height, content centered with padding */
     .ck-outer {
       flex:1; display:flex; align-items:center;
       padding:24px 0 24px; min-height:0;
@@ -293,7 +293,6 @@
       display:flex; flex-direction:column;
       gap:0; padding-top:0;
     }
-    /* Back button FIRST */
     .ck-sidebar .btn-back { margin-bottom:28px; margin-top:0; }
     .ck-step { display:flex; align-items:center; gap:13px; margin-bottom:22px; }
     .ck-num {
@@ -308,7 +307,7 @@
     .ck-lbl { font-size:13px; color:var(--muted); font-weight:500; transition:color 0.3s; }
     .ck-lbl.active { color:var(--blue); font-weight:700; }
 
-    /* Glass card — floating centered, scrolls internally */
+    /* Glass card */
     .ck-card {
       flex:1; min-height:0;
       max-height:calc(100vh - 180px);
@@ -331,7 +330,6 @@
     .ck-card::-webkit-scrollbar-track { background:transparent; }
     .ck-card::-webkit-scrollbar-thumb { background:rgba(0,70,255,0.18); border-radius:4px; }
 
-    /* Premium card header */
     .ck-header {
       margin-bottom:28px;
       padding-bottom:24px;
@@ -352,7 +350,7 @@
     .ck-title .t-blue { color:var(--blue); }
     .ck-sub { font-size:13px; color:var(--muted); line-height:1.7; }
 
-    /* ── FORM FIELDS — glass blue ── */
+    /* ── FORM FIELDS ── */
     .fg { margin-bottom:14px; }
     .fl { display:block; font-size:10.5px; font-weight:700; color:#4A6FA5; margin-bottom:7px; letter-spacing:1.5px; text-transform:uppercase; }
     .fi {
@@ -428,7 +426,6 @@
     .r-url h3 { font-family:'Unbounded',sans-serif; font-size:14px; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-.5px; }
     .r-url p { font-size:13px; color:var(--muted); margin-bottom:20px; line-height:1.65; }
 
-    /* Eligible — see .r-elig premium block above */
     .btn-back {
       display:inline-flex; align-items:center; gap:8px;
       background:rgba(0,70,255,0.07); color:var(--blue);
@@ -441,21 +438,7 @@
     .btn-back:hover { background:rgba(0,70,255,0.13); }
     .ck-top { display:flex; flex-direction:column; gap:20px; margin-bottom:32px; flex-shrink:0; }
 
-    /* Twitter CTA */
-    .tw-cta {
-      background:rgba(238,244,255,0.6);
-      border-radius:14px; padding:17px 20px;
-      border:1px solid rgba(99,130,255,0.18);
-      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    }
-    .tw-cta h4 { font-size:13px; font-weight:700; color:var(--dark); margin-bottom:3px; }
-    .tw-cta p { font-size:11.5px; color:var(--muted); }
-    .btn-tw { background:var(--dark); color:white; text-decoration:none; padding:11px 22px; border-radius:100px; font-size:13px; font-weight:700; font-family:'DM Sans',sans-serif; white-space:nowrap; display:inline-block; cursor:pointer; border:none; transition:all 0.25s; }
-    .btn-tw:hover { background:var(--blue); box-shadow:0 6px 20px rgba(0,70,255,0.28); }
-
-    /* ── RESPONSIVE — mobile + split screen ── */
-
-    /* Split screen (half laptop ~700-900px wide) */
+    /* ── RESPONSIVE ── */
     @media (max-width:960px) {
       .left { padding:28px 32px; }
       .hero-title { font-size:clamp(48px,8vw,72px); letter-spacing:-3px; }
@@ -463,52 +446,29 @@
       .ck-sidebar { width:120px; }
     }
 
-    /* Mobile (below 640px) — stacked layout */
     @media (max-width:640px) {
       html, body { overflow:auto; height:auto; }
       .app { flex-direction:column; height:auto; min-height:100vh; overflow:visible; }
       .page { height:auto; }
       .page.active { flex-direction:column; }
-
-      /* Right panel — compact banner on mobile */
-      .right {
-        width:100%; height:220px;
-        position:relative;
-      }
+      .right { width:100%; height:220px; position:relative; }
       .logo-glass-badge { padding:12px 20px; }
       .logo-glass-badge svg { width:120px; height:24px; }
       .right-pill { font-size:9px; padding:6px 16px; }
-
-      /* Left panel — full width, auto height */
-      .left {
-        width:100%; height:auto; min-height:auto;
-        padding:28px 20px 36px; overflow:visible;
-      }
-
-      /* Hero */
+      .left { width:100%; height:auto; min-height:auto; padding:28px 20px 36px; overflow:visible; }
       .hero-title { font-size:clamp(44px,12vw,64px); letter-spacing:-3px; }
       .hero-main-wrap { padding:32px 0 24px; }
       .hero-stats { flex-wrap:wrap; gap:16px; }
       .hstat+.hstat { border-left:none; padding-left:0; border-top:1px solid rgba(0,70,255,0.1); padding-top:16px; width:100%; }
-
-      /* Checker */
       .ck-outer { padding:20px 0; align-items:flex-start; }
       .ck-body { flex-direction:column; gap:20px; }
-      .ck-sidebar {
-        width:100%; flex-direction:row;
-        align-items:center; gap:12px;
-        flex-wrap:wrap;
-      }
+      .ck-sidebar { width:100%; flex-direction:row; align-items:center; gap:12px; flex-wrap:wrap; }
       .ck-sidebar .btn-back { margin-bottom:0; order:-1; }
       .ck-step { margin-bottom:0; }
-      .ck-card {
-        width:100%; max-height:none;
-        padding:24px;
-      }
+      .ck-card { width:100%; max-height:none; padding:24px; }
       .elig-amount { font-size:52px; }
     }
 
-    /* Very small screens */
     @media (max-width:380px) {
       .hero-title { font-size:40px; }
       .left { padding:20px 16px 28px; }
@@ -519,7 +479,7 @@
 <body>
 <div class="app">
 
-  <!-- FETCHING OVERLAY (shared, full screen) -->
+  <!-- FETCHING OVERLAY -->
   <div class="fetch-overlay" id="fetch-overlay">
     <div class="fetch-spinner"></div>
     <div class="fetch-title">Fetching Data...</div>
@@ -532,8 +492,6 @@
   <div id="page-hero" class="page active">
     <div class="left">
       <div class="left-grid"></div>
-
-      <!-- NAV -->
       <div class="li hero-nav-wrap">
         <nav class="nav">
           <div class="nav-logo">
@@ -549,7 +507,6 @@
         </nav>
       </div>
 
-      <!-- HERO MAIN — fills remaining space, centered vertically -->
       <div class="li hero-main-wrap">
         <div class="hero-label">Season 1 Airdrop</div>
         <h1 class="hero-title">$BILL<br><span class="t-blue">AIRDROP</span></h1>
@@ -557,14 +514,13 @@
         <button class="btn-enter" onclick="gotoChecker()">Enter Portal</button>
       </div>
 
-      <!-- STATS bottom -->
       <div class="li">
         <div class="hero-stats">
           <div class="hstat"><div class="hstat-val">10B</div><div class="hstat-lbl">Total $BILL Supply</div></div>
           <div class="hstat"><div class="hstat-val">69%</div><div class="hstat-lbl">Airdrop Pool</div></div>
           <div class="hstat"><div class="hstat-val">S1</div><div class="hstat-lbl">Current Season</div></div>
         </div>
-        <p class="copyright">Copyright © 2025 Just For Fun</p>
+        <p class="copyright">Copyright © 2026 — This is just for fun and entertainment made by community</p>
       </div>
     </div>
 
@@ -631,18 +587,18 @@
             <div id="form-sec">
               <div class="fg">
                 <label class="fl">Email Address</label>
-                <input class="fi" id="i-email" type="email" placeholder="eg: satoshi@bitcoin.org"/>
-                <div class="fe" id="e-email">Please enter a valid email address</div>
+                <input class="fi" id="i-email" type="email" placeholder="eg: satoshi@bitcoin.org" oninput="clearErr('i-email','e-email')"/>
+                <div class="fe" id="e-email">Please enter a valid email address (eg: name@domain.com)</div>
               </div>
               <div class="fg">
-                <label class="fl">Twitter Handle</label>
-                <input class="fi" id="i-tw" type="text" placeholder="eg: 0x_Zax"/>
-                <div class="fe" id="e-tw">Twitter handle is required</div>
+                <label class="fl">Twitter / X Handle</label>
+                <input class="fi" id="i-tw" type="text" placeholder="eg: @0x_Zax" oninput="autoAt(this); clearErr('i-tw','e-tw')"/>
+                <div class="fe" id="e-tw">Must start with @ (eg: @YourHandle)</div>
               </div>
               <div class="fg">
                 <label class="fl">Discord ID</label>
-                <input class="fi" id="i-dc" type="text" placeholder="eg: @0x_Zax"/>
-                <div class="fe" id="e-dc">Discord ID is required</div>
+                <input class="fi" id="i-dc" type="text" placeholder="eg: @0x_Zax" oninput="autoAt(this); clearErr('i-dc','e-dc')"/>
+                <div class="fe" id="e-dc">Must start with @ (eg: @YourDiscord)</div>
               </div>
               <button class="btn" id="btn-chk" onclick="doCheck()">Check Allocation →</button>
             </div>
@@ -680,18 +636,19 @@
                       <path d="M132.312 0C158.619 0 179.945 21.3259 179.945 47.6328V53H189.5C194.747 53 199 57.2533 199 62.5C199 67.7467 194.747 72 189.5 72H179.945V89.2178C179.945 108.927 163.968 124.904 144.259 124.904H54.7412C35.0322 124.904 19.0549 108.927 19.0547 89.2178V72H9.5C4.25329 72 0 67.7467 0 62.5C0 57.2533 4.25329 53 9.5 53H19.0547V47.6328C19.0548 21.326 40.3807 0 66.6875 0C79.4047 0 90.9573 4.98456 99.5 13.1055C108.043 4.9845 119.595 0 132.312 0Z" fill="#0046FF"/>
                       <path d="M48.6914 47.6333C48.6914 37.6952 56.7479 29.6387 66.6861 29.6387C76.6243 29.6387 84.6808 37.6952 84.6808 47.6334V83.2663C84.6808 89.8938 79.3082 95.2663 72.6808 95.2663H60.6914C54.064 95.2663 48.6914 89.8938 48.6914 83.2663V47.6333Z" fill="black"/>
                       <path d="M72.6807 87.2666V95.2666H60.6914V87.2666H72.6807ZM76.6807 83.2666V47.6338C76.6807 42.114 72.2062 37.6389 66.6865 37.6387C61.1666 37.6387 56.6914 42.1139 56.6914 47.6338V83.2666C56.6916 85.4756 58.4824 87.2666 60.6914 87.2666V95.2666L60.3818 95.2627C54.0004 95.1011 48.857 89.9575 48.6953 83.5762L48.6914 83.2666V47.6338C48.6914 37.6956 56.7483 29.6387 66.6865 29.6387L67.1504 29.6445C76.874 29.8908 84.6807 37.8508 84.6807 47.6338V83.2666L84.6768 83.5762C84.515 89.9576 79.3717 95.1012 72.9902 95.2627L72.6807 95.2666V87.2666C74.8897 87.2666 76.6805 85.4756 76.6807 83.2666Z" fill="white"/>
-                      <!-- Left eye animated blink via CSS on sibling -->
                       <path d="M114.32 47.6333C114.32 37.6952 122.377 29.6387 132.315 29.6387C142.253 29.6387 150.31 37.6952 150.31 47.6334V83.2663C150.31 89.8938 144.937 95.2663 138.31 95.2663H126.32C119.693 95.2663 114.32 89.8938 114.32 83.2663V47.6333Z" fill="black"/>
                       <path d="M138.31 87.2666V95.2666H126.32V87.2666H138.31ZM142.31 83.2666V47.6338C142.31 42.114 137.835 37.6389 132.315 37.6387C126.796 37.6387 122.32 42.1139 122.32 47.6338V83.2666C122.32 85.4756 124.111 87.2666 126.32 87.2666V95.2666L126.011 95.2627C119.629 95.1011 114.486 89.9575 114.324 83.5762L114.32 83.2666V47.6338C114.32 37.6956 122.377 29.6387 132.315 29.6387L132.779 29.6445C142.503 29.8908 150.31 37.8508 150.31 47.6338V83.2666L150.306 83.5762C150.144 89.9576 145.001 95.1012 138.619 95.2627L138.31 95.2666V87.2666C140.519 87.2666 142.309 85.4756 142.31 83.2666Z" fill="white"/>
                     </svg>
                   </div>
                 </div>
                 <div class="elig-lbl">Your Season 1 Allocation</div>
-                <div class="elig-amount">69 $BILL</div>
+                <div class="elig-amount" id="elig-amount-display">69 $BILL</div>
                 <p style="font-size:17px;font-weight:700;color:#07080F;margin-top:20px;margin-bottom:2px;letter-spacing:-0.2px">Hey <span id="elig-handle" style="color:#07080F">@user</span></p>
                 <p class="elig-msg">You are now eligible for $BILL Airdrop!</p>
                 <p class="elig-life">Congrats for this life changing airdrop</p>
               </div>
+
+              <!-- Billions X CTA -->
               <div class="tw-cta">
                 <div>
                   <h4>Stay tuned on Billions X account for claim updates</h4>
@@ -699,13 +656,30 @@
                 </div>
                 <a href="https://x.com/billions_ntwk" target="_blank" class="btn-tw">Follow on X →</a>
               </div>
-            </div>
 
+              <!-- Dev CTA -->
+              <div class="dev-cta">
+                <div class="dev-cta-left">
+                  <img
+                    class="dev-avatar"
+                    src="https://unavatar.io/twitter/0x_zax"
+                    alt="0x_zax avatar"
+                    onerror="this.style.background='linear-gradient(135deg,#0046FF,#6366F1)'; this.src='';"
+                  />
+                  <div>
+                    <h4>Follow the dev for more contents</h4>
+                    <p>Built by @0x_zax — more community tools coming soon</p>
+                  </div>
+                </div>
+                <a href="https://x.com/0x_zax" target="_blank" class="btn-tw">Follow Dev →</a>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>
 
-      <p class="li copyright">Copyright © 2025 ZKID Labs AG</p>
+      <p class="li copyright">Copyright © 2026 — This is just for fun and entertainment made by community</p>
     </div>
 
     <div class="right">
@@ -735,23 +709,68 @@
 </div>
 
 <script>
-/* ── BUILD BILLIONS MASK GRID ── */
+/* ══════════════════════════════════════════
+   CHANGE 3: Fixed allocation pool
+══════════════════════════════════════════ */
+const ALLOCATIONS = [
+  69,15792,26841,47623,58974,62315,74826,81294,93471,10582,
+  21943,32657,45128,56739,68214,79453,82167,94325,11864,23795,
+  35481,46927,58213,69745,73126,84592,91834,12675,24836,36914,
+  48725,59316,67842,74259,85613,91726,13498,25917,37864,49612,
+  58147,69283,71395,82461,93527,14762,26893,37951,48276,59638
+];
+
+/* ══════════════════════════════════════════
+   CHANGE 2: Persistent allocation storage
+   Uses localStorage so same ID = same number
+══════════════════════════════════════════ */
+function getStorageKey(email, tw, dc) {
+  return 'bill_alloc_' + btoa(
+    email.trim().toLowerCase() + '|' +
+    tw.trim().toLowerCase() + '|' +
+    dc.trim().toLowerCase()
+  ).replace(/=/g,'');
+}
+
+function getSavedAllocation(email, tw, dc) {
+  try {
+    const key = getStorageKey(email, tw, dc);
+    const saved = localStorage.getItem(key);
+    if (saved) return parseInt(saved, 10);
+  } catch(e) {}
+  return null;
+}
+
+function saveAllocation(email, tw, dc, amount) {
+  try {
+    const key = getStorageKey(email, tw, dc);
+    localStorage.setItem(key, String(amount));
+  } catch(e) {}
+}
+
+function assignAllocation(email, tw, dc) {
+  // Check if already assigned
+  const existing = getSavedAllocation(email, tw, dc);
+  if (existing !== null) return existing;
+  // Assign a random one from the pool and save it
+  const pick = ALLOCATIONS[Math.floor(Math.random() * ALLOCATIONS.length)];
+  saveAllocation(email, tw, dc, pick);
+  return pick;
+}
+
+/* ══════════════════════════════════════════
+   MASK GRID
+══════════════════════════════════════════ */
 const CELL_COLORS = ['#3B82F6','#F87171','#A3E635','#FB923C','#34D399','#C084FC','#FDE68A','#F9A8D4','#67E8F9','#818CF8','#FCA5A5','#6EE7B7'];
 const EYE_COLORS  = ['#1D4ED8','#991B1B','#365314','#9A3412','#065F46','#6B21A8','#92400E','#831843','#0C4A6E','#312E81','#7F1D1D','#064E3B'];
 
 function billionsMaskSVG(bodyColor, eyeColor) {
-  // Exact Billions mask path as body, exact eye slot paths from their SVG
   return `<svg viewBox="0 0 200 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- Body: exact Billions mask shape -->
     <path d="M132.312 0C158.619 0 179.945 21.3259 179.945 47.6328V53H189.5C194.747 53 199 57.2533 199 62.5C199 67.7467 194.747 72 189.5 72H179.945V89.2178C179.945 108.927 163.968 124.904 144.259 124.904H54.7412C35.0322 124.904 19.0549 108.927 19.0547 89.2178V72H9.5C4.25329 72 0 67.7467 0 62.5C0 57.2533 4.25329 53 9.5 53H19.0547V47.6328C19.0548 21.326 40.3807 0 66.6875 0C79.4047 0 90.9573 4.98456 99.5 13.1055C108.043 4.9845 119.595 0 132.312 0Z" fill="${bodyColor}"/>
-    <!-- Left eye slot white surround -->
     <path d="M48.6914 47.6333C48.6914 37.6952 56.7479 29.6387 66.6861 29.6387C76.6243 29.6387 84.6808 37.6952 84.6808 47.6334V83.2663C84.6808 89.8938 79.3082 95.2663 72.6808 95.2663H60.6914C54.064 95.2663 48.6914 89.8938 48.6914 83.2663V47.6333Z" fill="white"/>
-    <!-- Left pupil -->
     <ellipse cx="66.7" cy="63" rx="11" ry="14" fill="${eyeColor}"/>
     <circle cx="70.5" cy="55.5" r="4" fill="white"/>
-    <!-- Right eye slot white surround -->
     <path d="M114.32 47.6333C114.32 37.6952 122.377 29.6387 132.315 29.6387C142.253 29.6387 150.31 37.6952 150.31 47.6334V83.2663C150.31 89.8938 144.937 95.2663 138.31 95.2663H126.32C119.693 95.2663 114.32 89.8938 114.32 83.2663V47.6333Z" fill="white"/>
-    <!-- Right pupil -->
     <ellipse cx="132.3" cy="63" rx="11" ry="14" fill="${eyeColor}"/>
     <circle cx="136" cy="55.5" r="4" fill="white"/>
   </svg>`;
@@ -764,7 +783,6 @@ function buildGrid(id) {
     const idx = i % CELL_COLORS.length;
     const div = document.createElement('div');
     div.className = 'mask-cell';
-    // No background — the SVG body IS the colored shape
     div.innerHTML = billionsMaskSVG(CELL_COLORS[idx], EYE_COLORS[idx]);
     el.appendChild(div);
   }
@@ -772,7 +790,9 @@ function buildGrid(id) {
 buildGrid('grid1');
 buildGrid('grid2');
 
-/* ── NAVIGATION ── */
+/* ══════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════ */
 function gotoChecker() {
   document.getElementById('page-hero').classList.remove('active');
   document.getElementById('page-checker').classList.add('active');
@@ -785,42 +805,94 @@ function goBack() {
   window.scrollTo(0,0);
 }
 
-/* ── DB ── */
-const DB = {};
-function getKey() {
-  return ['i-email','i-tw','i-dc'].map(id => document.getElementById(id).value.trim().toLowerCase()).join('|');
+/* ══════════════════════════════════════════
+   CHANGE 1: Form validation
+   - Email: must contain @ and proper domain
+   - Twitter & Discord: must start with @
+   - Auto-add @ if missing
+══════════════════════════════════════════ */
+function autoAt(input) {
+  const v = input.value;
+  if (v.length > 0 && v[0] !== '@') {
+    input.value = '@' + v;
+  }
 }
 
+function clearErr(inputId, errId) {
+  document.getElementById(inputId).classList.remove('err');
+  document.getElementById(errId).classList.remove('show');
+}
+
+function isValidEmail(email) {
+  // Must have @ and a dot after @, no spaces
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isValidHandle(handle) {
+  // Must start with @ and have at least 1 char after
+  return /^@.+/.test(handle.trim());
+}
+
+function validate() {
+  let ok = true;
+  const email = document.getElementById('i-email').value.trim();
+  const tw    = document.getElementById('i-tw').value.trim();
+  const dc    = document.getElementById('i-dc').value.trim();
+
+  // Email
+  if (!isValidEmail(email)) {
+    document.getElementById('i-email').classList.add('err');
+    document.getElementById('e-email').classList.add('show');
+    ok = false;
+  }
+
+  // Twitter — must be @handle
+  if (!isValidHandle(tw)) {
+    // Try auto-fixing: if they typed without @, add it
+    if (tw.length > 0 && tw[0] !== '@') {
+      document.getElementById('i-tw').value = '@' + tw;
+    } else {
+      document.getElementById('i-tw').classList.add('err');
+      document.getElementById('e-tw').classList.add('show');
+      ok = false;
+    }
+  }
+
+  // Discord — must be @handle
+  if (!isValidHandle(dc)) {
+    if (dc.length > 0 && dc[0] !== '@') {
+      document.getElementById('i-dc').value = '@' + dc;
+    } else {
+      document.getElementById('i-dc').classList.add('err');
+      document.getElementById('e-dc').classList.add('show');
+      ok = false;
+    }
+  }
+
+  return ok;
+}
+
+/* Result toggles */
 function hideAll() {
   ['r-ne','r-url','r-elig'].forEach(id => document.getElementById(id).classList.remove('show'));
 }
 function showRes(id) { hideAll(); document.getElementById(id).classList.add('show'); }
 
-function validate() {
-  let ok = true;
-  const em = document.getElementById('i-email').value.trim();
-  const tw = document.getElementById('i-tw').value.trim();
-  const dc = document.getElementById('i-dc').value.trim();
-  const se = (a, b, c) => { document.getElementById(a).classList.toggle('err',c); document.getElementById(b).classList.toggle('show',c); if(c) ok=false; };
-  se('i-email','e-email', !em || !em.includes('@'));
-  se('i-tw','e-tw', !tw);
-  se('i-dc','e-dc', !dc);
-  return ok;
-}
-
-/* ── FETCH ANIMATION ── */
+/* ══════════════════════════════════════════
+   FETCH ANIMATION
+══════════════════════════════════════════ */
 function runFetchOverlay(durationMs, onComplete) {
   const overlay = document.getElementById('fetch-overlay');
-  const bar = document.getElementById('fetch-bar');
-  const pct = document.getElementById('fetch-pct');
-  const msgs = ['Verifying identity...','Fetching on-chain data...','Checking contributions...','Finalizing eligibility...','Complete!'];
+  const bar     = document.getElementById('fetch-bar');
+  const pct     = document.getElementById('fetch-pct');
+  const msgs    = ['Verifying identity...','Fetching on-chain data...','Checking contributions...','Finalizing eligibility...','Complete!'];
   overlay.classList.add('show');
   let p = 0;
   const step = 100 / (durationMs / 50);
   const iv = setInterval(() => {
     p = Math.min(p + step, 100);
     bar.style.width = p + '%';
-    pct.textContent = Math.floor(p) + '% — ' + msgs[Math.min(Math.floor(p/25), 4)];
+    pct.textContent = Math.floor(p) + '% — ' + msgs[Math.min(Math.floor(p / 25), 4)];
     if (p >= 100) {
       clearInterval(iv);
       setTimeout(() => {
@@ -833,17 +905,38 @@ function runFetchOverlay(durationMs, onComplete) {
   }, 50);
 }
 
+/* ══════════════════════════════════════════
+   MAIN CHECK FLOW
+══════════════════════════════════════════ */
+// Track if user already submitted a URL in this session (per identity)
+const submittedURLs = {};
+
+function getIdentityKey() {
+  const e = document.getElementById('i-email').value.trim().toLowerCase();
+  const t = document.getElementById('i-tw').value.trim().toLowerCase();
+  const d = document.getElementById('i-dc').value.trim().toLowerCase();
+  return e + '|' + t + '|' + d;
+}
+
 function doCheck() {
   if (!validate()) return;
+
   const btn = document.getElementById('btn-chk');
   btn.disabled = true;
   btn.innerHTML = '<div class="spin-sm"></div> Checking Eligibility...';
   hideAll();
+
   runFetchOverlay(5000, () => {
     btn.disabled = false;
     btn.innerHTML = 'Check Allocation →';
-    if (DB[getKey()]) showEligible();
-    else {
+
+    const idKey = getIdentityKey();
+
+    // Check if already submitted URL (eligible)
+    if (submittedURLs[idKey]) {
+      showEligible();
+    } else {
+      // Show not eligible — need to submit video
       showRes('r-ne');
       document.getElementById('r-ne').scrollIntoView({ behavior:'smooth', block:'nearest' });
     }
@@ -859,20 +952,38 @@ function doFetch2() {
   const u = document.getElementById('i-url').value.trim();
   if (!u) return;
   runFetchOverlay(5000, () => {
-    DB[getKey()] = true;
+    // Mark this identity as having submitted
+    const idKey = getIdentityKey();
+    submittedURLs[idKey] = true;
     showEligible();
   });
 }
 
+/* ══════════════════════════════════════════
+   SHOW ELIGIBLE — uses persistent allocation
+══════════════════════════════════════════ */
 function showEligible() {
-  showRes('r-elig');
-  const n = document.getElementById('sn1');
-  n.textContent = '✓'; n.classList.remove('active'); n.classList.add('done');
-  // Set Twitter handle
-  const tw = document.getElementById('i-tw').value.trim();
+  const email = document.getElementById('i-email').value.trim();
+  const tw    = document.getElementById('i-tw').value.trim();
+  const dc    = document.getElementById('i-dc').value.trim();
+
+  // Get or assign persistent allocation
+  const amount = assignAllocation(email, tw, dc);
+
+  // Update amount display
+  document.getElementById('elig-amount-display').textContent = amount.toLocaleString() + ' $BILL';
+
+  // Update handle
   const handle = tw ? (tw.startsWith('@') ? tw : '@' + tw) : '@user';
   document.getElementById('elig-handle').textContent = handle;
-  // Scroll card to eligible section
+
+  // Mark step 1 done
+  const n = document.getElementById('sn1');
+  n.textContent = '✓';
+  n.classList.remove('active');
+  n.classList.add('done');
+
+  showRes('r-elig');
   setTimeout(() => {
     document.getElementById('r-elig').scrollIntoView({ behavior:'smooth', block:'nearest' });
   }, 100);
