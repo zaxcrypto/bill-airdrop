@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>$BILL Airdrop — Season 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --blue:#0046FF; --blue-light:#3B82F6; --blue-pale:#EEF4FF;
+      --dark:#07080F; --muted:#7C8DB5; --border:rgba(99,130,255,0.15);
+      --green:#22C55E; --red:#EF4444;
+      --sky1:#E8F0FF; --sky2:#F0F6FF; --sky3:#FAFCFF;
+    }
+    html, body { height:100%; font-family:'DM Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; overflow-y:auto; }
+
+    @keyframes fadeUp   { from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn   { from{opacity:0}to{opacity:1} }
+    @keyframes spin     { to{transform:rotate(360deg)} }
+    @keyframes floatBadge { 0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-18px) rotate(1deg)} }
+    @keyframes maskBob  { 0%,100%{transform:translateY(0) scale(1) rotate(var(--r,0deg))}50%{transform:translateY(-10px) scale(1.03) rotate(var(--r,0deg))} }
+    @keyframes shimmer  { 0%{background-position:200% center}100%{background-position:-200% center} }
+    @keyframes pulse    { 0%,100%{opacity:1}50%{opacity:0.5} }
+    /* Eye blink — scaleY 1→0→1 */
+    @keyframes logoShake { 0%,100%{transform:rotate(0deg) scale(1)}15%{transform:rotate(-6deg) scale(1.06)}30%{transform:rotate(5deg) scale(1.04)}45%{transform:rotate(-4deg) scale(1.05)}60%{transform:rotate(3deg) scale(1.03)}75%{transform:rotate(-2deg) scale(1.02)}90%{transform:rotate(1deg) scale(1.01)} }
+    /* Premium dual-tone gradient for 69 $BILL */
+    @keyframes dualShimmer { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
+
+    /* ── LAYOUT ── */
+    .app  { display:flex; height:100vh; width:100vw; overflow:hidden; }
+    .page { display:none; width:100%; height:100%; }
+    .page.active { display:flex; }
+
+    /* ── LEFT PANEL — premium sky blue ── */
+    .left {
+      width:52%; height:100vh;
+      background: linear-gradient(160deg, var(--sky3) 0%, var(--sky2) 40%, var(--sky1) 100%);
+      display:flex; flex-direction:column;
+      padding:36px 52px 36px; position:relative;
+      overflow-y:auto; overflow-x:hidden;
+    }
+    /* Soft radial glow blobs */
+    .left::before {
+      content:''; position:absolute;
+      width:500px; height:500px; border-radius:50%;
+      background:radial-gradient(circle, rgba(0,70,255,0.07) 0%, transparent 65%);
+      top:-100px; left:-80px; pointer-events:none;
+    }
+    .left::after {
+      content:''; position:absolute;
+      width:400px; height:400px; border-radius:50%;
+      background:radial-gradient(circle, rgba(99,130,255,0.06) 0%, transparent 65%);
+      bottom:-80px; right:-60px; pointer-events:none;
+    }
+    /* Dot grid */
+    .left-grid {
+      position:absolute; inset:0; pointer-events:none;
+      background-image:radial-gradient(rgba(0,70,255,0.07) 1.5px, transparent 1.5px);
+      background-size:28px 28px;
+    }
+    .li { position:relative; z-index:1; }
+
+    /* ── RIGHT PANEL ── */
+    .right {
+      width:48%; height:100vh; 
+      background: radial-gradient(ellipse at 50% 50%, #1a5fff 0%, #0046FF 45%, #002FCC 100%);
+      display:flex; align-items:center; justify-content:center;
+      position:relative; overflow:hidden; flex-shrink:0;
+    }
+    /* Subtle grid on right */
+    .right::before {
+      content:''; position:absolute; inset:0; pointer-events:none;
+      background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ── BILLIONS MASK GRID ── */
+    .mask-grid {
+      position:absolute; inset:-30px;
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:12px; padding:12px;
+      transform:rotate(-6deg) scale(1.1);
+      pointer-events:none;
+    }
+    /* ── BILLIONS MASK GRID ── */
+    .mask-grid {
+      position:absolute; inset:-20px;
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:16px; padding:16px;
+      transform:rotate(-6deg) scale(1.12);
+      pointer-events:none; align-content:center;
+    }
+    /* Each cell IS the mask shape — no square, no border-radius box */
+    .mask-cell {
+      aspect-ratio:200/125;
+      display:flex; align-items:center; justify-content:center;
+      background:none !important;
+    }
+    .mask-cell svg { width:100%; height:100%; display:block; }
+
+    .mask-cell:nth-child(1)  { --r:-2deg; animation:maskBob 3.8s ease-in-out infinite 0.0s; }
+    .mask-cell:nth-child(2)  { --r:1deg;  animation:maskBob 4.4s ease-in-out infinite 0.6s; }
+    .mask-cell:nth-child(3)  { --r:-1deg; animation:maskBob 3.6s ease-in-out infinite 1.2s; }
+    .mask-cell:nth-child(4)  { --r:2deg;  animation:maskBob 4.8s ease-in-out infinite 0.3s; }
+    .mask-cell:nth-child(5)  { --r:-2deg; animation:maskBob 3.4s ease-in-out infinite 1.5s; }
+    .mask-cell:nth-child(6)  { --r:1deg;  animation:maskBob 4.2s ease-in-out infinite 0.9s; }
+    .mask-cell:nth-child(7)  { --r:-1deg; animation:maskBob 5.0s ease-in-out infinite 0.2s; }
+    .mask-cell:nth-child(8)  { --r:2deg;  animation:maskBob 3.9s ease-in-out infinite 1.3s; }
+    .mask-cell:nth-child(9)  { --r:-2deg; animation:maskBob 4.6s ease-in-out infinite 0.7s; }
+    .mask-cell:nth-child(10) { --r:1deg;  animation:maskBob 3.7s ease-in-out infinite 1.9s; }
+    .mask-cell:nth-child(11) { --r:-1deg; animation:maskBob 4.3s ease-in-out infinite 0.4s; }
+    .mask-cell:nth-child(12) { --r:2deg;  animation:maskBob 5.1s ease-in-out infinite 1.1s; }
+
+    /* ── RIGHT OVERLAY ── */
+    .right-overlay {
+      position:relative; z-index:2;
+      display:flex; flex-direction:column; align-items:center; gap:20px;
+    }
+    .logo-glass-badge {
+      background:white; border-radius:22px;
+      padding:18px 30px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 2px 0 rgba(255,255,255,0.8) inset, 0 28px 72px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.15);
+      animation:floatBadge 5s ease-in-out infinite;
+      position:relative; overflow:hidden;
+    }
+    .logo-glass-badge::after {
+      content:''; position:absolute; top:0; left:0; right:0; height:45%;
+      background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,transparent 100%);
+      border-radius:22px 22px 0 0; pointer-events:none;
+    }
+    .right-pill {
+      background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3);
+      color:white; padding:9px 24px; border-radius:100px;
+      font-size:11px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase;
+    }
+
+    /* ── NAV ── */
+    .nav { display:flex; align-items:center; gap:12px; }
+    .nav-logo { display:flex; align-items:center; gap:13px; }
+    .nav-name { font-family:'Unbounded',sans-serif; font-size:20px; font-weight:900; color:var(--dark); letter-spacing:-0.5px; }
+    .nav-s1 {
+      margin-left:auto; background:var(--blue); color:white;
+      padding:7px 20px; border-radius:100px;
+      font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+    }
+
+    /* ── HERO LAYOUT — fills full height, proper spacing ── */
+    .hero-nav-wrap { flex-shrink:0; }
+    .hero-main-wrap {
+      flex:1; display:flex; flex-direction:column;
+      justify-content:center; animation:fadeUp 0.8s ease both;
+      padding:0;
+    }
+
+    /* ── PREMIUM ELIGIBLE CARD OVERHAUL ── */
+    .r-elig {
+      background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(238,244,255,0.9)) !important;
+      border: 1px solid rgba(0,70,255,0.12) !important;
+      backdrop-filter: blur(24px) !important;
+      border-radius: 22px !important;
+      overflow: hidden;
+      position: relative;
+    }
+    /* Glow accent top */
+    .r-elig::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #0EA5E9, #6366F1, #EC4899, #6366F1, #0EA5E9);
+      background-size: 200% 100%;
+      animation: dualShimmer 3s linear infinite;
+    }
+    .elig-top {
+      text-align:center; padding:36px 0 28px;
+      border-bottom: 1px solid rgba(0,70,255,0.08);
+      margin-bottom:24px;
+      position:relative;
+    }
+    .elig-logo-wrap {
+      width:80px; height:64px; margin:0 auto 28px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .elig-logo-shake { animation:logoShake 5s ease-in-out infinite; transform-origin:center; }
+    .elig-lbl {
+      font-size:10px; font-weight:800; color:#8B9CC8;
+      letter-spacing:5px; text-transform:uppercase; margin-bottom:16px;
+    }
+    .elig-amount {
+      font-family:'Unbounded',sans-serif;
+      font-size:72px; font-weight:600;
+      letter-spacing:-2px; line-height:1.0; margin:0;
+      background: linear-gradient(90deg,
+        #0EA5E9 0%, #3B82F6 20%, #8B5CF6 40%, #EC4899 60%, #8B5CF6 80%, #0EA5E9 100%
+      );
+      background-size:300% 100%;
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+      animation:dualShimmer 3.5s ease infinite;
+      filter:drop-shadow(0 0 24px rgba(139,92,246,0.45)) drop-shadow(0 0 8px rgba(14,165,233,0.3));
+    }
+    /* "Hey @handle" line */
+    .elig-handle-line {
+      font-size:18px; font-weight:700;
+      color:#0040CC; margin-top:24px;
+      letter-spacing:-0.3px;
+    }
+    .elig-handle-line span { color:#0EA5E9; }
+    /* "You are now eligible" */
+    .elig-msg {
+      font-size:15px; color:#0040CC; font-weight:700;
+      margin:2px 0 0; letter-spacing:-0.1px;
+    }
+    /* "Congrats" */
+    .elig-life {
+      font-size:14px; color:#374151; font-weight:500;
+      margin-top:12px; line-height:1.6;
+    }
+    /* Twitter CTA redesign */
+    .tw-cta {
+      background: rgba(0,70,255,0.04);
+      border-radius: 16px; padding:20px 22px;
+      border: 1px solid rgba(0,70,255,0.1);
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; flex-wrap:wrap;
+    }
+    .tw-cta h4 { font-size:13.5px; font-weight:700; color:var(--dark); margin-bottom:4px; }
+    .tw-cta p { font-size:12px; color:var(--muted); }
+    .btn-tw {
+      background: var(--dark); color:white; text-decoration:none;
+      padding:12px 24px; border-radius:100px; font-size:13px;
+      font-weight:700; font-family:'DM Sans',sans-serif;
+      white-space:nowrap; display:inline-block; cursor:pointer;
+      border:none; transition:all 0.25s;
+      box-shadow:0 4px 16px rgba(0,0,0,0.15);
+    }
+    .btn-tw:hover { background:var(--blue); box-shadow:0 8px 28px rgba(0,70,255,0.35); transform:translateY(-1px); }
+
+    /* ── HERO TYPOGRAPHY ── */
+    .hero-label {
+      display:flex; align-items:center; gap:10px;
+      font-size:10px; font-weight:700; letter-spacing:5px;
+      text-transform:uppercase; color:var(--blue); margin-bottom:20px;
+    }
+    .hero-label::before { content:''; display:block; width:28px; height:2px; background:var(--blue); border-radius:2px; }
+    .hero-title {
+      font-family:'Unbounded',sans-serif;
+      font-size:clamp(64px,7vw,96px);
+      font-weight:900; letter-spacing:-5px; line-height:0.93;
+      color:var(--dark); margin-bottom:28px;
+    }
+    .hero-title .t-blue { color:var(--blue); }
+    .hero-sub {
+      font-size:15px; color:#5a6e9a; line-height:1.85;
+      max-width:340px; margin-bottom:44px; font-weight:300;
+    }
+    .btn-enter {
+      display:inline-flex; align-items:center; gap:12px;
+      background:var(--dark); color:white; border:none;
+      padding:19px 52px; border-radius:100px;
+      font-size:14px; font-weight:700; font-family:'DM Sans',sans-serif;
+      cursor:pointer; letter-spacing:0.3px;
+      transition:all 0.3s cubic-bezier(.34,1.56,.64,1);
+      box-shadow:0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .btn-enter::after { content:'→'; font-size:17px; }
+    .btn-enter:hover {
+      background:var(--blue); transform:translateY(-4px);
+      box-shadow:0 24px 64px rgba(0,70,255,0.42), 0 4px 16px rgba(0,70,255,0.2);
+    }
+    .hero-stats { display:flex; padding-top:36px; border-top:1px solid rgba(0,70,255,0.1); margin-top:4px; }
+    .hstat { flex:1; }
+    .hstat+.hstat { border-left:1px solid rgba(0,70,255,0.1); padding-left:28px; }
+    .hstat-val {
+      font-family:'Unbounded',sans-serif; font-size:24px; font-weight:900;
+      color:var(--dark); letter-spacing:-1.5px; margin-bottom:6px;
+    }
+    .hstat-lbl { font-size:10px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+    .copyright { font-size:11px; color:#b0bcd8; margin-top:22px; }
+
+    /* ── CHECKER LAYOUT ── */
+    /* Left fills height, content centered with padding */
+    .ck-outer {
+      flex:1; display:flex; align-items:center;
+      padding:24px 0 24px; min-height:0;
+    }
+    .ck-body { width:100%; display:flex; gap:28px; align-items:flex-start; }
+    .ck-sidebar {
+      width:148px; flex-shrink:0;
+      display:flex; flex-direction:column;
+      gap:0; padding-top:0;
+    }
+    /* Back button FIRST */
+    .ck-sidebar .btn-back { margin-bottom:28px; margin-top:0; }
+    .ck-step { display:flex; align-items:center; gap:13px; margin-bottom:22px; }
+    .ck-num {
+      width:30px; height:30px; border-radius:50%;
+      background:rgba(0,0,0,0.07);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Unbounded',sans-serif; font-size:12px; font-weight:700;
+      color:var(--muted); flex-shrink:0; transition:all 0.35s;
+    }
+    .ck-num.active { background:var(--blue); color:white; box-shadow:0 4px 16px rgba(0,70,255,0.35); }
+    .ck-num.done   { background:var(--green); color:white; }
+    .ck-lbl { font-size:13px; color:var(--muted); font-weight:500; transition:color 0.3s; }
+    .ck-lbl.active { color:var(--blue); font-weight:700; }
+
+    /* Glass card — floating centered, scrolls internally */
+    .ck-card {
+      flex:1; min-height:0;
+      max-height:calc(100vh - 180px);
+      background:rgba(255,255,255,0.88);
+      backdrop-filter:blur(28px);
+      -webkit-backdrop-filter:blur(28px);
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,0.9);
+      box-shadow:
+        0 2px 0 rgba(255,255,255,0.8) inset,
+        0 -1px 0 rgba(0,50,180,0.06) inset,
+        0 40px 80px rgba(0,40,160,0.12),
+        0 16px 40px rgba(0,40,160,0.08),
+        0 4px 12px rgba(0,40,160,0.05);
+      overflow-y:auto; overflow-x:hidden;
+      padding:36px; animation:fadeIn 0.4s ease both;
+      scroll-behavior:smooth;
+    }
+    .ck-card::-webkit-scrollbar { width:4px; }
+    .ck-card::-webkit-scrollbar-track { background:transparent; }
+    .ck-card::-webkit-scrollbar-thumb { background:rgba(0,70,255,0.18); border-radius:4px; }
+
+    /* Premium card header */
+    .ck-header {
+      margin-bottom:28px;
+      padding-bottom:24px;
+      border-bottom:1px solid rgba(99,130,255,0.12);
+    }
+    .ck-tag {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(0,70,255,0.08); color:var(--blue);
+      padding:4px 12px; border-radius:100px;
+      font-size:10px; font-weight:700; letter-spacing:2px;
+      text-transform:uppercase; margin-bottom:14px;
+      border:1px solid rgba(0,70,255,0.12);
+    }
+    .ck-title {
+      font-family:'Unbounded',sans-serif; font-size:22px; font-weight:900;
+      color:var(--dark); letter-spacing:-1px; line-height:1.2; margin-bottom:6px;
+    }
+    .ck-title .t-blue { color:var(--blue); }
+    .ck-sub { font-size:13px; color:var(--muted); line-height:1.7; }
+
+    /* ── FORM FIELDS — glass blue ── */
+    .fg { margin-bottom:14px; }
+    .fl { display:block; font-size:10.5px; font-weight:700; color:#4A6FA5; margin-bottom:7px; letter-spacing:1.5px; text-transform:uppercase; }
+    .fi {
+      width:100%; padding:14px 18px;
+      border:1.5px solid rgba(99,130,255,0.2);
+      border-radius:13px; font-size:14px; font-family:'DM Sans',sans-serif;
+      background:rgba(238,244,255,0.6);
+      outline:none; color:var(--dark); transition:all 0.22s ease;
+    }
+    .fi:focus { border-color:var(--blue); background:rgba(255,255,255,0.9); box-shadow:0 0 0 4px rgba(0,70,255,0.1); }
+    .fi.err   { border-color:var(--red); background:rgba(255,245,245,0.8); }
+    .fi::placeholder { color:#a0b0cc; }
+    .fe { font-size:11px; color:var(--red); margin-top:5px; font-weight:600; display:none; }
+    .fe.show { display:block; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      width:100%; background:var(--dark); color:white; border:none;
+      padding:16px 24px; border-radius:100px;
+      font-size:14px; font-weight:700; font-family:'DM Sans',sans-serif;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      gap:10px; margin-top:18px; transition:all 0.25s;
+      box-shadow:0 6px 24px rgba(0,0,0,0.15);
+    }
+    .btn:hover { background:var(--blue); box-shadow:0 10px 36px rgba(0,70,255,0.32); transform:translateY(-1px); }
+    .btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+    .btn.blue { background:var(--blue); box-shadow:0 6px 24px rgba(0,70,255,0.28); }
+    .btn.blue:hover { background:#003ACC; }
+
+    .spin-sm { width:16px; height:16px; border-radius:50%; border:2.5px solid rgba(255,255,255,0.3); border-top:2.5px solid white; animation:spin 0.85s linear infinite; flex-shrink:0; }
+
+    /* ── FETCHING OVERLAY ── */
+    .fetch-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(240,246,255,0.85);
+      backdrop-filter:blur(16px);
+      z-index:100; flex-direction:column;
+      align-items:center; justify-content:center; gap:28px;
+      animation:fadeIn 0.3s ease both;
+    }
+    .fetch-overlay.show { display:flex; }
+    .fetch-spinner {
+      width:64px; height:64px; border-radius:50%;
+      border:3px solid rgba(0,70,255,0.12);
+      border-top:3px solid var(--blue);
+      animation:spin 0.9s linear infinite;
+    }
+    .fetch-title { font-family:'Unbounded',sans-serif; font-size:22px; font-weight:900; color:var(--dark); letter-spacing:-0.5px; }
+    .fetch-sub { font-size:14px; color:var(--muted); text-align:center; line-height:1.65; max-width:300px; }
+    .fetch-bar-wrap { width:320px; background:rgba(0,70,255,0.1); border-radius:100px; height:6px; overflow:hidden; }
+    .fetch-bar { height:100%; width:0; background:linear-gradient(90deg,var(--blue),#60A5FA); border-radius:100px; transition:width 0.5s ease; }
+    .fetch-pct { font-size:12px; color:var(--blue); font-weight:700; letter-spacing:1px; }
+
+    /* ── RESULT CARDS ── */
+    .rc { border-radius:20px; padding:28px; margin-top:20px; animation:fadeUp 0.4s ease both; display:none; }
+    .rc.show { display:block; }
+
+    /* Not eligible */
+    .r-ne {
+      background:rgba(255,248,248,0.9);
+      border:1.5px solid rgba(254,202,202,0.8);
+      backdrop-filter:blur(12px);
+    }
+    .ne-head { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+    .ne-icon { width:48px; height:48px; border-radius:50%; background:rgba(254,226,226,0.8); display:flex; align-items:center; justify-content:center; color:var(--red); font-family:'Unbounded',sans-serif; font-size:16px; font-weight:900; flex-shrink:0; }
+    .ne-title { font-family:'Unbounded',sans-serif; font-size:15px; font-weight:900; color:#DC2626; line-height:1.35; }
+    .reason-box { background:rgba(255,255,255,0.8); border-radius:13px; padding:14px 18px; border:1px solid rgba(254,202,202,0.6); margin-bottom:20px; }
+    .reason-lbl { font-size:9.5px; font-weight:800; color:var(--muted); letter-spacing:2.5px; text-transform:uppercase; margin-bottom:7px; }
+    .reason-txt { font-size:13px; color:#6B7280; line-height:1.75; }
+
+    /* URL input */
+    .r-url { background:rgba(238,244,255,0.7); border:1.5px solid rgba(99,130,255,0.2); backdrop-filter:blur(12px); }
+    .r-url h3 { font-family:'Unbounded',sans-serif; font-size:14px; font-weight:900; color:var(--dark); margin-bottom:8px; letter-spacing:-.5px; }
+    .r-url p { font-size:13px; color:var(--muted); margin-bottom:20px; line-height:1.65; }
+
+    /* Eligible — see .r-elig premium block above */
+    .btn-back {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(0,70,255,0.07); color:var(--blue);
+      border:1px solid rgba(0,70,255,0.14);
+      padding:9px 20px; border-radius:100px;
+      font-size:13px; font-weight:700; font-family:'DM Sans',sans-serif;
+      cursor:pointer; transition:all 0.2s; width:fit-content;
+      margin-top:16px;
+    }
+    .btn-back:hover { background:rgba(0,70,255,0.13); }
+    .ck-top { display:flex; flex-direction:column; gap:20px; margin-bottom:32px; flex-shrink:0; }
+
+    /* Twitter CTA */
+    .tw-cta {
+      background:rgba(238,244,255,0.6);
+      border-radius:14px; padding:17px 20px;
+      border:1px solid rgba(99,130,255,0.18);
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    }
+    .tw-cta h4 { font-size:13px; font-weight:700; color:var(--dark); margin-bottom:3px; }
+    .tw-cta p { font-size:11.5px; color:var(--muted); }
+    .btn-tw { background:var(--dark); color:white; text-decoration:none; padding:11px 22px; border-radius:100px; font-size:13px; font-weight:700; font-family:'DM Sans',sans-serif; white-space:nowrap; display:inline-block; cursor:pointer; border:none; transition:all 0.25s; }
+    .btn-tw:hover { background:var(--blue); box-shadow:0 6px 20px rgba(0,70,255,0.28); }
+
+    /* ── RESPONSIVE — mobile + split screen ── */
+
+    /* Split screen (half laptop ~700-900px wide) */
+    @media (max-width:960px) {
+      .left { padding:28px 32px; }
+      .hero-title { font-size:clamp(48px,8vw,72px); letter-spacing:-3px; }
+      .ck-card { padding:28px; }
+      .ck-sidebar { width:120px; }
+    }
+
+    /* Mobile (below 640px) — stacked layout */
+    @media (max-width:640px) {
+      html, body { overflow:auto; height:auto; }
+      .app { flex-direction:column; height:auto; min-height:100vh; overflow:visible; }
+      .page { height:auto; }
+      .page.active { flex-direction:column; }
+
+      /* Right panel — compact banner on mobile */
+      .right {
+        width:100%; height:220px;
+        position:relative;
+      }
+      .logo-glass-badge { padding:12px 20px; }
+      .logo-glass-badge svg { width:120px; height:24px; }
+      .right-pill { font-size:9px; padding:6px 16px; }
+
+      /* Left panel — full width, auto height */
+      .left {
+        width:100%; height:auto; min-height:auto;
+        padding:28px 20px 36px; overflow:visible;
+      }
+
+      /* Hero */
+      .hero-title { font-size:clamp(44px,12vw,64px); letter-spacing:-3px; }
+      .hero-main-wrap { padding:32px 0 24px; }
+      .hero-stats { flex-wrap:wrap; gap:16px; }
+      .hstat+.hstat { border-left:none; padding-left:0; border-top:1px solid rgba(0,70,255,0.1); padding-top:16px; width:100%; }
+
+      /* Checker */
+      .ck-outer { padding:20px 0; align-items:flex-start; }
+      .ck-body { flex-direction:column; gap:20px; }
+      .ck-sidebar {
+        width:100%; flex-direction:row;
+        align-items:center; gap:12px;
+        flex-wrap:wrap;
+      }
+      .ck-sidebar .btn-back { margin-bottom:0; order:-1; }
+      .ck-step { margin-bottom:0; }
+      .ck-card {
+        width:100%; max-height:none;
+        padding:24px;
+      }
+      .elig-amount { font-size:52px; }
+    }
+
+    /* Very small screens */
+    @media (max-width:380px) {
+      .hero-title { font-size:40px; }
+      .left { padding:20px 16px 28px; }
+      .ck-card { padding:20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- FETCHING OVERLAY (shared, full screen) -->
+  <div class="fetch-overlay" id="fetch-overlay">
+    <div class="fetch-spinner"></div>
+    <div class="fetch-title">Fetching Data...</div>
+    <p class="fetch-sub">Verifying your details on the Billions network. Please wait.</p>
+    <div class="fetch-bar-wrap"><div class="fetch-bar" id="fetch-bar"></div></div>
+    <div class="fetch-pct" id="fetch-pct">0%</div>
+  </div>
+
+  <!-- ══════════════ HERO PAGE ══════════════ -->
+  <div id="page-hero" class="page active">
+    <div class="left">
+      <div class="left-grid"></div>
+
+      <!-- NAV -->
+      <div class="li hero-nav-wrap">
+        <nav class="nav">
+          <div class="nav-logo">
+            <svg width="46" height="37" viewBox="0 0 200 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M132.312 0C158.619 0 179.945 21.3259 179.945 47.6328V53H189.5C194.747 53 199 57.2533 199 62.5C199 67.7467 194.747 72 189.5 72H179.945V89.2178C179.945 108.927 163.968 124.904 144.259 124.904H54.7412C35.0322 124.904 19.0549 108.927 19.0547 89.2178V72H9.5C4.25329 72 0 67.7467 0 62.5C0 57.2533 4.25329 53 9.5 53H19.0547V47.6328C19.0548 21.326 40.3807 0 66.6875 0C79.4047 0 90.9573 4.98456 99.5 13.1055C108.043 4.9845 119.595 0 132.312 0Z" fill="#0046FF"/>
+              <path d="M48.6914 47.6333C48.6914 37.6952 56.7479 29.6387 66.6861 29.6387C76.6243 29.6387 84.6808 37.6952 84.6808 47.6334V83.2663C84.6808 89.8938 79.3082 95.2663 72.6808 95.2663H60.6914C54.064 95.2663 48.6914 89.8938 48.6914 83.2663V47.6333Z" fill="black"/>
+              <path d="M72.6807 87.2666V95.2666H60.6914V87.2666H72.6807ZM76.6807 83.2666V47.6338C76.6807 42.114 72.2062 37.6389 66.6865 37.6387C61.1666 37.6387 56.6914 42.1139 56.6914 47.6338V83.2666C56.6916 85.4756 58.4824 87.2666 60.6914 87.2666V95.2666L60.3818 95.2627C54.0004 95.1011 48.857 89.9575 48.6953 83.5762L48.6914 83.2666V47.6338C48.6914 37.6956 56.7483 29.6387 66.6865 29.6387L67.1504 29.6445C76.874 29.8908 84.6807 37.8508 84.6807 47.6338V83.2666L84.6768 83.5762C84.515 89.9576 79.3717 95.1012 72.9902 95.2627L72.6807 95.2666V87.2666C74.8897 87.2666 76.6805 85.4756 76.6807 83.2666Z" fill="white"/>
+              <path d="M114.32 47.6333C114.32 37.6952 122.377 29.6387 132.315 29.6387C142.253 29.6387 150.31 37.6952 150.31 47.6334V83.2663C150.31 89.8938 144.937 95.2663 138.31 95.2663H126.32C119.693 95.2663 114.32 89.8938 114.32 83.2663V47.6333Z" fill="black"/>
+              <path d="M138.31 87.2666V95.2666H126.32V87.2666H138.31ZM142.31 83.2666V47.6338C142.31 42.114 137.835 37.6389 132.315 37.6387C126.796 37.6387 122.32 42.1139 122.32 47.6338V83.2666C122.32 85.4756 124.111 87.2666 126.32 87.2666V95.2666L126.011 95.2627C119.629 95.1011 114.486 89.9575 114.324 83.5762L114.32 83.2666V47.6338C114.32 37.6956 122.377 29.6387 132.315 29.6387L132.779 29.6445C142.503 29.8908 150.31 37.8508 150.31 47.6338V83.2666L150.306 83.5762C150.144 89.9576 145.001 95.1012 138.619 95.2627L138.31 95.2666V87.2666C140.519 87.2666 142.309 85.4756 142.31 83.2666Z" fill="white"/>
+            </svg>
+            <span class="nav-name">Billions</span>
+          </div>
+        </nav>
+      </div>
+
+      <!-- HERO MAIN — fills remaining space, centered vertically -->
+      <div class="li hero-main-wrap">
+        <div class="hero-label">Season 1 Airdrop</div>
+        <h1 class="hero-title">$BILL<br><span class="t-blue">AIRDROP</span></h1>
+        <p class="hero-sub">The most anticipated token distribution in the Billions ecosystem. Check your Season 1 allocation and claim your share.</p>
+        <button class="btn-enter" onclick="gotoChecker()">Enter Portal</button>
+      </div>
+
+      <!-- STATS bottom -->
+      <div class="li">
+        <div class="hero-stats">
+          <div class="hstat"><div class="hstat-val">10B</div><div class="hstat-lbl">Total $BILL Supply</div></div>
+          <div class="hstat"><div class="hstat-val">69%</div><div class="hstat-lbl">Airdrop Pool</div></div>
+          <div class="hstat"><div class="hstat-val">S1</div><div class="hstat-lbl">Current Season</div></div>
+        </div>
+        <p class="copyright">Copyright © 2025 Just For Fun</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="mask-grid" id="grid1"></div>
+      <div class="right-overlay">
+        <div class="logo-glass-badge">
+          <svg width="152" height="30" viewBox="0 0 628 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M132.312 0C158.619 0 179.945 21.3259 179.945 47.6328V53H189.5C194.747 53 199 57.2533 199 62.5C199 67.7467 194.747 72 189.5 72H179.945V89.2178C179.945 108.927 163.968 124.904 144.259 124.904H54.7412C35.0322 124.904 19.0549 108.927 19.0547 89.2178V72H9.5C4.25329 72 0 67.7467 0 62.5C0 57.2533 4.25329 53 9.5 53H19.0547V47.6328C19.0548 21.326 40.3807 0 66.6875 0C79.4047 0 90.9573 4.98456 99.5 13.1055C108.043 4.9845 119.595 0 132.312 0Z" fill="#0046FF"/>
+            <path d="M48.6914 47.6333C48.6914 37.6952 56.7479 29.6387 66.6861 29.6387C76.6243 29.6387 84.6808 37.6952 84.6808 47.6334V83.2663C84.6808 89.8938 79.3082 95.2663 72.6808 95.2663H60.6914C54.064 95.2663 48.6914 89.8938 48.6914 83.2663V47.6333Z" fill="black"/>
+            <path d="M72.6807 87.2666V95.2666H60.6914V87.2666H72.6807ZM76.6807 83.2666V47.6338C76.6807 42.114 72.2062 37.6389 66.6865 37.6387C61.1666 37.6387 56.6914 42.1139 56.6914 47.6338V83.2666C56.6916 85.4756 58.4824 87.2666 60.6914 87.2666V95.2666L60.3818 95.2627C54.0004 95.1011 48.857 89.9575 48.6953 83.5762L48.6914 83.2666V47.6338C48.6914 37.6956 56.7483 29.6387 66.6865 29.6387L67.1504 29.6445C76.874 29.8908 84.6807 37.8508 84.6807 47.6338V83.2666L84.6768 83.5762C84.515 89.9576 79.3717 95.1012 72.9902 95.2627L72.6807 95.2666V87.2666C74.8897 87.2666 76.6805 85.4756 76.6807 83.2666Z" fill="white"/>
+            <path d="M114.32 47.6333C114.32 37.6952 122.377 29.6387 132.315 29.6387C142.253 29.6387 150.31 37.6952 150.31 47.6334V83.2663C150.31 89.8938 144.937 95.2663 138.31 95.2663H126.32C119.693 95.2663 114.32 89.8938 114.32 83.2663V47.6333Z" fill="black"/>
+            <path d="M138.31 87.2666V95.2666H126.32V87.2666H138.31ZM142.31 83.2666V47.6338C142.31 42.114 137.835 37.6389 132.315 37.6387C126.796 37.6387 122.32 42.1139 122.32 47.6338V83.2666C122.32 85.4756 124.111 87.2666 126.32 87.2666V95.2666L126.011 95.2627C119.629 95.1011 114.486 89.9575 114.324 83.5762L114.32 83.2666V47.6338C114.32 37.6956 122.377 29.6387 132.315 29.6387L132.779 29.6445C142.503 29.8908 150.31 37.8508 150.31 47.6338V83.2666L150.306 83.5762C150.144 89.9576 145.001 95.1012 138.619 95.2627L138.31 95.2666V87.2666C140.519 87.2666 142.309 85.4756 142.31 83.2666Z" fill="white"/>
+            <path d="M536.613 41C553.458 41 567.113 54.6553 567.113 71.5V107H549.113V69.5527C549.113 62.6493 543.517 57.0529 536.613 57.0527C529.71 57.0527 524.113 62.6492 524.113 69.5527V107H506.113V71.5C506.113 54.6554 519.769 41.0001 536.613 41Z" fill="black"/>
+            <path d="M602.723 108C587.021 108 577.319 98.3365 574 88.5442L589.064 82.6173C590.596 88.6731 595.574 93.6981 602.723 93.6981C607.702 93.6981 611.021 91.25 611.021 87.6423C611.021 77.4635 576.936 84.2923 576.936 59.6827C576.936 49.5038 585.745 41 599.915 41C613.064 41 623.915 47.4423 626.851 56.8481L611.787 63.1615C610.128 57.2346 604.894 54.5288 600.553 54.5288C596.34 54.5288 593.404 56.3327 593.404 59.1673C593.404 69.475 628 60.9712 628 87.2558C628 98.4654 617.787 108 602.723 108Z" fill="black"/>
+            <path d="M465 108C445.06 108 431 93.8269 431 74.5C431 55.1731 445.06 41 465 41C484.684 41 499 55.1731 499 74.5C499 93.8269 484.684 108 465 108ZM465 91.8942C474.075 91.8942 480.211 84.8077 480.211 74.5C480.211 64.1923 474.075 57.1058 465 57.1058C455.797 57.1058 449.662 64.1923 449.662 74.5C449.662 84.8077 455.797 91.8942 465 91.8942Z" fill="black"/>
+            <path d="M405.819 107V42.8177H424.921V107H405.819ZM415.305 34.2855C408.808 34.2855 404 29.319 404 23.0791C404 16.9665 408.808 12 415.305 12C421.932 12 427 16.9665 427 23.0791C427 29.319 421.932 34.2855 415.305 34.2855Z" fill="black"/>
+            <path d="M375 107V17H393V107H375Z" fill="black"/>
+            <path d="M344 107V17H363V107H344Z" fill="black"/>
+            <path d="M312.898 107V42.8177H332.831V107H312.898ZM322.797 34.2855C316.017 34.2855 311 29.319 311 23.0791C311 16.9665 316.017 12 322.797 12C329.712 12 335 16.9665 335 23.0791C335 29.319 329.712 34.2855 322.797 34.2855Z" fill="black"/>
+            <path d="M235 107V18H271.673C287.886 18 300.368 26.01 300.368 40.8857C300.368 49.2771 295.092 55.6343 289.945 58.4314C298.051 61.61 305 68.8571 305 80.4271C305 97.3371 291.618 107 272.574 107H235ZM270.901 89.7086C281.324 89.7086 285.827 86.1486 285.827 79.2829C285.827 72.29 281.324 68.4757 270.901 68.4757H255.331V89.7086H270.901ZM270 51.6929C278.107 51.6929 281.71 48.26 281.71 42.7929C281.71 37.1986 278.107 33.7657 269.614 33.7657H255.331V51.6929H270Z" fill="black"/>
+          </svg>
+        </div>
+        <div class="right-pill">Season 1 — $BILL Airdrop</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ CHECKER PAGE ══════════════ -->
+  <div id="page-checker" class="page">
+    <div class="left">
+      <div class="left-grid"></div>
+      <div class="li">
+        <nav class="nav">
+          <div class="nav-logo">
+            <svg width="46" height="37" viewBox="0 0 200 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M132.312 0C158.619 0 179.945 21.3259 179.945 47.6328V53H189.5C194.747 53 199 57.2533 199 62.5C199 67.7467 194.747 72 189.5 72H179.945V89.2178C179.945 108.927 163.968 124.904 144.259 124.904H54.7412C35.0322 124.904 19.0549 108.927 19.0547 89.2178V72H9.5C4.25329 72 0 67.7467 0 62.5C0 57.2533 4.25329 53 9.5 53H19.0547V47.6328C19.0548 21.326 40.3807 0 66.6875 0C79.4047 0 90.9573 4.98456 99.5 13.1055C108.043 4.9845 119.595 0 132.312 0Z" fill="#0046FF"/>
+              <path d="M48.6914 47.6333C48.6914 37.6952 56.7479 29.6387 66.6861 29.6387C76.6243 29.6387 84.6808 37.6952 84.6808 47.6334V83.2663C84.6808 89.8938 79.3082 95.2663 72.6808 95.2663H60.6914C54.064 95.2663 48.6914 89.8938 48.6914 83.2663V47.6333Z" fill="black"/>
+              <path d="M72.6807 87.2666V95.2666H60.6914V87.2666H72.6807ZM76.6807 83.2666V47.6338C76.6807 42.114 72.2062 37.6389 66.6865 37.6387C61.1666 37.6387 56.6914 42.1139 56.6914 47.6338V83.2666C56.6916 85.4756 58.4824 87.2666 60.6914 87.2666V95.2666L60.3818 95.2627C54.0004 95.1011 48.857 89.9575 48.6953 83.5762L48.6914 83.2666V47.6338C48.6914 37.6956 56.7483 29.6387 66.6865 29.6387L67.1504 29.6445C76.874 29.8908 84.6807 37.8508 84.6807 47.6338V83.2666L84.6768 83.5762C84.515 89.9576 79.3717 95.1012 72.9902 95.2627L72.6807 95.2666V87.2666C74.8897 87.2666 76.6805 85.4756 76.6807 83.2666Z" fill="white"/>
+              <path d="M114.32 47.6333C114.32 37.6952 122.377 29.6387 132.315 29.6387C142.253 29.6387 150.31 37.6952 150.31 47.6334V83.2663C150.31 89.8938 144.937 95.2663 138.31 95.2663H126.32C119.693 95.2663 114.32 89.8938 114.32 83.2663V47.6333Z" fill="black"/>
+              <path d="M138.31 87.2666V95.2666H126.32V87.2666H138.31ZM142.31 83.2666V47.6338C142.31 42.114 137.835 37.6389 132.315 37.6387C126.796 37.6387 122.32 42.1139 122.32 47.6338V83.2666C122.32 85.4756 124.111 87.2666 126.32 87.2666V95.2666L126.011 95.2627C119.629 95.1011 114.486 89.9575 114.324 83.5762L114.32 83.2666V47.6338C114.32 37.6956 122.377 29.6387 132.315 29.6387L132.779 29.6445C142.503 29.8908 150.31 37.8508 150.31 47.6338V83.2666L150.306 83.5762C150.144 89.9576 145.001 95.1012 138.619 95.2627L138.31 95.2666V87.2666C140.519 87.2666 142.309 85.4756 142.31 83.2666Z" fill="white"/>
+            </svg>
+            <span class="nav-name">Billions</span>
+          </div>
+          <div class="nav-s1">Season 1</div>
+        </nav>
+      </div>
+
+      <div class="li ck-outer">
+        <div class="ck-body">
+          <div class="ck-sidebar">
+            <button class="btn-back" onclick="goBack()">← Back</button>
+            <div class="ck-step"><div class="ck-num active" id="sn1">1</div><span class="ck-lbl active">Check</span></div>
+            <div class="ck-step"><div class="ck-num" id="sn2">2</div><span class="ck-lbl">Claim &amp; Stake</span></div>
+          </div>
+
+          <div class="ck-card" id="main-card">
+            <div class="ck-header">
+              <div class="ck-tag">✦ Season 1 — $BILL Allocation</div>
+              <h2 class="ck-title">Check Your <span class="t-blue">$BILL</span><br>Airdrop Allocation</h2>
+              <p class="ck-sub">Enter your details below to verify your Season 1 eligibility</p>
+            </div>
+
+            <div id="form-sec">
+              <div class="fg">
+                <label class="fl">Email Address</label>
+                <input class="fi" id="i-email" type="email" placeholder="eg: satoshi@bitcoin.org"/>
+                <div class="fe" id="e-email">Please enter a valid email address</div>
+              </div>
+              <div class="fg">
+                <label class="fl">Twitter Handle</label>
+                <input class="fi" id="i-tw" type="text" placeholder="eg: 0x_Zax"/>
+                <div class="fe" id="e-tw">Twitter handle is required</div>
+              </div>
+              <div class="fg">
+                <label class="fl">Discord ID</label>
+                <input class="fi" id="i-dc" type="text" placeholder="eg: @0x_Zax"/>
+                <div class="fe" id="e-dc">Discord ID is required</div>
+              </div>
+              <button class="btn" id="btn-chk" onclick="doCheck()">Check Allocation →</button>
+            </div>
+
+            <!-- NOT ELIGIBLE -->
+            <div class="rc r-ne" id="r-ne">
+              <div class="ne-head">
+                <div class="ne-icon">✗</div>
+                <div class="ne-title">You are not eligible<br>for $BILL Airdrop</div>
+              </div>
+              <div class="reason-box">
+                <div class="reason-lbl">Reason</div>
+                <p class="reason-txt">You haven't posted a video on Twitter dancing with the Billions Mask. Complete this task and submit your video link to qualify for Season 1 allocation.</p>
+              </div>
+              <button class="btn blue" style="margin-top:0" onclick="showUrl()">Submit Your Contribution →</button>
+            </div>
+
+            <!-- URL INPUT -->
+            <div class="rc r-url" id="r-url">
+              <h3>Submit Your X Link of Your Contribution</h3>
+              <p>Paste the link to your Billions Mask dance video from Twitter/X below</p>
+              <div class="fg">
+                <label class="fl">Twitter / X Video URL</label>
+                <input class="fi" id="i-url" type="url" placeholder="eg: https://x.com/0x_Zax/status/..."/>
+              </div>
+              <button class="btn blue" onclick="doFetch2()">Verify Contribution →</button>
+            </div>
+
+            <!-- ELIGIBLE -->
+            <div class="rc r-elig" id="r-elig">
+              <div class="elig-top">
+                <div class="elig-logo-wrap">
+                  <div class="elig-logo-shake">
+                    <svg width="76" height="60" viewBox="0 0 200 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M132.312 0C158.619 0 179.945 21.3259 179.945 47.6328V53H189.5C194.747 53 199 57.2533 199 62.5C199 67.7467 194.747 72 189.5 72H179.945V89.2178C179.945 108.927 163.968 124.904 144.259 124.904H54.7412C35.0322 124.904 19.0549 108.927 19.0547 89.2178V72H9.5C4.25329 72 0 67.7467 0 62.5C0 57.2533 4.25329 53 9.5 53H19.0547V47.6328C19.0548 21.326 40.3807 0 66.6875 0C79.4047 0 90.9573 4.98456 99.5 13.1055C108.043 4.9845 119.595 0 132.312 0Z" fill="#0046FF"/>
+                      <path d="M48.6914 47.6333C48.6914 37.6952 56.7479 29.6387 66.6861 29.6387C76.6243 29.6387 84.6808 37.6952 84.6808 47.6334V83.2663C84.6808 89.8938 79.3082 95.2663 72.6808 95.2663H60.6914C54.064 95.2663 48.6914 89.8938 48.6914 83.2663V47.6333Z" fill="black"/>
+                      <path d="M72.6807 87.2666V95.2666H60.6914V87.2666H72.6807ZM76.6807 83.2666V47.6338C76.6807 42.114 72.2062 37.6389 66.6865 37.6387C61.1666 37.6387 56.6914 42.1139 56.6914 47.6338V83.2666C56.6916 85.4756 58.4824 87.2666 60.6914 87.2666V95.2666L60.3818 95.2627C54.0004 95.1011 48.857 89.9575 48.6953 83.5762L48.6914 83.2666V47.6338C48.6914 37.6956 56.7483 29.6387 66.6865 29.6387L67.1504 29.6445C76.874 29.8908 84.6807 37.8508 84.6807 47.6338V83.2666L84.6768 83.5762C84.515 89.9576 79.3717 95.1012 72.9902 95.2627L72.6807 95.2666V87.2666C74.8897 87.2666 76.6805 85.4756 76.6807 83.2666Z" fill="white"/>
+                      <!-- Left eye animated blink via CSS on sibling -->
+                      <path d="M114.32 47.6333C114.32 37.6952 122.377 29.6387 132.315 29.6387C142.253 29.6387 150.31 37.6952 150.31 47.6334V83.2663C150.31 89.8938 144.937 95.2663 138.31 95.2663H126.32C119.693 95.2663 114.32 89.8938 114.32 83.2663V47.6333Z" fill="black"/>
+                      <path d="M138.31 87.2666V95.2666H126.32V87.2666H138.31ZM142.31 83.2666V47.6338C142.31 42.114 137.835 37.6389 132.315 37.6387C126.796 37.6387 122.32 42.1139 122.32 47.6338V83.2666C122.32 85.4756 124.111 87.2666 126.32 87.2666V95.2666L126.011 95.2627C119.629 95.1011 114.486 89.9575 114.324 83.5762L114.32 83.2666V47.6338C114.32 37.6956 122.377 29.6387 132.315 29.6387L132.779 29.6445C142.503 29.8908 150.31 37.8508 150.31 47.6338V83.2666L150.306 83.5762C150.144 89.9576 145.001 95.1012 138.619 95.2627L138.31 95.2666V87.2666C140.519 87.2666 142.309 85.4756 142.31 83.2666Z" fill="white"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="elig-lbl">Your Season 1 Allocation</div>
+                <div class="elig-amount">69 $BILL</div>
+                <p style="font-size:17px;font-weight:700;color:#07080F;margin-top:20px;margin-bottom:2px;letter-spacing:-0.2px">Hey <span id="elig-handle" style="color:#07080F">@user</span></p>
+                <p class="elig-msg">You are now eligible for $BILL Airdrop!</p>
+                <p class="elig-life">Congrats for this life changing airdrop</p>
+              </div>
+              <div class="tw-cta">
+                <div>
+                  <h4>Stay tuned on Billions X account for claim updates</h4>
+                  <p>Follow @billions_ntwk to receive airdrop notifications</p>
+                </div>
+                <a href="https://x.com/billions_ntwk" target="_blank" class="btn-tw">Follow on X →</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <p class="li copyright">Copyright © 2025 ZKID Labs AG</p>
+    </div>
+
+    <div class="right">
+      <div class="mask-grid" id="grid2"></div>
+      <div class="right-overlay">
+        <div class="logo-glass-badge">
+          <svg width="152" height="30" viewBox="0 0 628 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M132.312 0C158.619 0 179.945 21.3259 179.945 47.6328V53H189.5C194.747 53 199 57.2533 199 62.5C199 67.7467 194.747 72 189.5 72H179.945V89.2178C179.945 108.927 163.968 124.904 144.259 124.904H54.7412C35.0322 124.904 19.0549 108.927 19.0547 89.2178V72H9.5C4.25329 72 0 67.7467 0 62.5C0 57.2533 4.25329 53 9.5 53H19.0547V47.6328C19.0548 21.326 40.3807 0 66.6875 0C79.4047 0 90.9573 4.98456 99.5 13.1055C108.043 4.9845 119.595 0 132.312 0Z" fill="#0046FF"/>
+            <path d="M48.6914 47.6333C48.6914 37.6952 56.7479 29.6387 66.6861 29.6387C76.6243 29.6387 84.6808 37.6952 84.6808 47.6334V83.2663C84.6808 89.8938 79.3082 95.2663 72.6808 95.2663H60.6914C54.064 95.2663 48.6914 89.8938 48.6914 83.2663V47.6333Z" fill="black"/>
+            <path d="M72.6807 87.2666V95.2666H60.6914V87.2666H72.6807ZM76.6807 83.2666V47.6338C76.6807 42.114 72.2062 37.6389 66.6865 37.6387C61.1666 37.6387 56.6914 42.1139 56.6914 47.6338V83.2666C56.6916 85.4756 58.4824 87.2666 60.6914 87.2666V95.2666L60.3818 95.2627C54.0004 95.1011 48.857 89.9575 48.6953 83.5762L48.6914 83.2666V47.6338C48.6914 37.6956 56.7483 29.6387 66.6865 29.6387L67.1504 29.6445C76.874 29.8908 84.6807 37.8508 84.6807 47.6338V83.2666L84.6768 83.5762C84.515 89.9576 79.3717 95.1012 72.9902 95.2627L72.6807 95.2666V87.2666C74.8897 87.2666 76.6805 85.4756 76.6807 83.2666Z" fill="white"/>
+            <path d="M114.32 47.6333C114.32 37.6952 122.377 29.6387 132.315 29.6387C142.253 29.6387 150.31 37.6952 150.31 47.6334V83.2663C150.31 89.8938 144.937 95.2663 138.31 95.2663H126.32C119.693 95.2663 114.32 89.8938 114.32 83.2663V47.6333Z" fill="black"/>
+            <path d="M138.31 87.2666V95.2666H126.32V87.2666H138.31ZM142.31 83.2666V47.6338C142.31 42.114 137.835 37.6389 132.315 37.6387C126.796 37.6387 122.32 42.1139 122.32 47.6338V83.2666C122.32 85.4756 124.111 87.2666 126.32 87.2666V95.2666L126.011 95.2627C119.629 95.1011 114.486 89.9575 114.324 83.5762L114.32 83.2666V47.6338C114.32 37.6956 122.377 29.6387 132.315 29.6387L132.779 29.6445C142.503 29.8908 150.31 37.8508 150.31 47.6338V83.2666L150.306 83.5762C150.144 89.9576 145.001 95.1012 138.619 95.2627L138.31 95.2666V87.2666C140.519 87.2666 142.309 85.4756 142.31 83.2666Z" fill="white"/>
+            <path d="M536.613 41C553.458 41 567.113 54.6553 567.113 71.5V107H549.113V69.5527C549.113 62.6493 543.517 57.0529 536.613 57.0527C529.71 57.0527 524.113 62.6492 524.113 69.5527V107H506.113V71.5C506.113 54.6554 519.769 41.0001 536.613 41Z" fill="black"/>
+            <path d="M602.723 108C587.021 108 577.319 98.3365 574 88.5442L589.064 82.6173C590.596 88.6731 595.574 93.6981 602.723 93.6981C607.702 93.6981 611.021 91.25 611.021 87.6423C611.021 77.4635 576.936 84.2923 576.936 59.6827C576.936 49.5038 585.745 41 599.915 41C613.064 41 623.915 47.4423 626.851 56.8481L611.787 63.1615C610.128 57.2346 604.894 54.5288 600.553 54.5288C596.34 54.5288 593.404 56.3327 593.404 59.1673C593.404 69.475 628 60.9712 628 87.2558C628 98.4654 617.787 108 602.723 108Z" fill="black"/>
+            <path d="M465 108C445.06 108 431 93.8269 431 74.5C431 55.1731 445.06 41 465 41C484.684 41 499 55.1731 499 74.5C499 93.8269 484.684 108 465 108ZM465 91.8942C474.075 91.8942 480.211 84.8077 480.211 74.5C480.211 64.1923 474.075 57.1058 465 57.1058C455.797 57.1058 449.662 64.1923 449.662 74.5C449.662 84.8077 455.797 91.8942 465 91.8942Z" fill="black"/>
+            <path d="M405.819 107V42.8177H424.921V107H405.819ZM415.305 34.2855C408.808 34.2855 404 29.319 404 23.0791C404 16.9665 408.808 12 415.305 12C421.932 12 427 16.9665 427 23.0791C427 29.319 421.932 34.2855 415.305 34.2855Z" fill="black"/>
+            <path d="M375 107V17H393V107H375Z" fill="black"/>
+            <path d="M344 107V17H363V107H344Z" fill="black"/>
+            <path d="M312.898 107V42.8177H332.831V107H312.898ZM322.797 34.2855C316.017 34.2855 311 29.319 311 23.0791C311 16.9665 316.017 12 322.797 12C329.712 12 335 16.9665 335 23.0791C335 29.319 329.712 34.2855 322.797 34.2855Z" fill="black"/>
+            <path d="M235 107V18H271.673C287.886 18 300.368 26.01 300.368 40.8857C300.368 49.2771 295.092 55.6343 289.945 58.4314C298.051 61.61 305 68.8571 305 80.4271C305 97.3371 291.618 107 272.574 107H235ZM270.901 89.7086C281.324 89.7086 285.827 86.1486 285.827 79.2829C285.827 72.29 281.324 68.4757 270.901 68.4757H255.331V89.7086H270.901ZM270 51.6929C278.107 51.6929 281.71 48.26 281.71 42.7929C281.71 37.1986 278.107 33.7657 269.614 33.7657H255.331V51.6929H270Z" fill="black"/>
+          </svg>
+        </div>
+        <div class="right-pill">Season 1 — Eligibility Check</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── BUILD BILLIONS MASK GRID ── */
+const CELL_COLORS = ['#3B82F6','#F87171','#A3E635','#FB923C','#34D399','#C084FC','#FDE68A','#F9A8D4','#67E8F9','#818CF8','#FCA5A5','#6EE7B7'];
+const EYE_COLORS  = ['#1D4ED8','#991B1B','#365314','#9A3412','#065F46','#6B21A8','#92400E','#831843','#0C4A6E','#312E81','#7F1D1D','#064E3B'];
+
+function billionsMaskSVG(bodyColor, eyeColor) {
+  // Exact Billions mask path as body, exact eye slot paths from their SVG
+  return `<svg viewBox="0 0 200 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Body: exact Billions mask shape -->
+    <path d="M132.312 0C158.619 0 179.945 21.3259 179.945 47.6328V53H189.5C194.747 53 199 57.2533 199 62.5C199 67.7467 194.747 72 189.5 72H179.945V89.2178C179.945 108.927 163.968 124.904 144.259 124.904H54.7412C35.0322 124.904 19.0549 108.927 19.0547 89.2178V72H9.5C4.25329 72 0 67.7467 0 62.5C0 57.2533 4.25329 53 9.5 53H19.0547V47.6328C19.0548 21.326 40.3807 0 66.6875 0C79.4047 0 90.9573 4.98456 99.5 13.1055C108.043 4.9845 119.595 0 132.312 0Z" fill="${bodyColor}"/>
+    <!-- Left eye slot white surround -->
+    <path d="M48.6914 47.6333C48.6914 37.6952 56.7479 29.6387 66.6861 29.6387C76.6243 29.6387 84.6808 37.6952 84.6808 47.6334V83.2663C84.6808 89.8938 79.3082 95.2663 72.6808 95.2663H60.6914C54.064 95.2663 48.6914 89.8938 48.6914 83.2663V47.6333Z" fill="white"/>
+    <!-- Left pupil -->
+    <ellipse cx="66.7" cy="63" rx="11" ry="14" fill="${eyeColor}"/>
+    <circle cx="70.5" cy="55.5" r="4" fill="white"/>
+    <!-- Right eye slot white surround -->
+    <path d="M114.32 47.6333C114.32 37.6952 122.377 29.6387 132.315 29.6387C142.253 29.6387 150.31 37.6952 150.31 47.6334V83.2663C150.31 89.8938 144.937 95.2663 138.31 95.2663H126.32C119.693 95.2663 114.32 89.8938 114.32 83.2663V47.6333Z" fill="white"/>
+    <!-- Right pupil -->
+    <ellipse cx="132.3" cy="63" rx="11" ry="14" fill="${eyeColor}"/>
+    <circle cx="136" cy="55.5" r="4" fill="white"/>
+  </svg>`;
+}
+
+function buildGrid(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  for (let i = 0; i < 12; i++) {
+    const idx = i % CELL_COLORS.length;
+    const div = document.createElement('div');
+    div.className = 'mask-cell';
+    // No background — the SVG body IS the colored shape
+    div.innerHTML = billionsMaskSVG(CELL_COLORS[idx], EYE_COLORS[idx]);
+    el.appendChild(div);
+  }
+}
+buildGrid('grid1');
+buildGrid('grid2');
+
+/* ── NAVIGATION ── */
+function gotoChecker() {
+  document.getElementById('page-hero').classList.remove('active');
+  document.getElementById('page-checker').classList.add('active');
+  window.scrollTo(0,0);
+}
+function goBack() {
+  hideAll();
+  document.getElementById('page-checker').classList.remove('active');
+  document.getElementById('page-hero').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ── DB ── */
+const DB = {};
+function getKey() {
+  return ['i-email','i-tw','i-dc'].map(id => document.getElementById(id).value.trim().toLowerCase()).join('|');
+}
+
+function hideAll() {
+  ['r-ne','r-url','r-elig'].forEach(id => document.getElementById(id).classList.remove('show'));
+}
+function showRes(id) { hideAll(); document.getElementById(id).classList.add('show'); }
+
+function validate() {
+  let ok = true;
+  const em = document.getElementById('i-email').value.trim();
+  const tw = document.getElementById('i-tw').value.trim();
+  const dc = document.getElementById('i-dc').value.trim();
+  const se = (a, b, c) => { document.getElementById(a).classList.toggle('err',c); document.getElementById(b).classList.toggle('show',c); if(c) ok=false; };
+  se('i-email','e-email', !em || !em.includes('@'));
+  se('i-tw','e-tw', !tw);
+  se('i-dc','e-dc', !dc);
+  return ok;
+}
+
+/* ── FETCH ANIMATION ── */
+function runFetchOverlay(durationMs, onComplete) {
+  const overlay = document.getElementById('fetch-overlay');
+  const bar = document.getElementById('fetch-bar');
+  const pct = document.getElementById('fetch-pct');
+  const msgs = ['Verifying identity...','Fetching on-chain data...','Checking contributions...','Finalizing eligibility...','Complete!'];
+  overlay.classList.add('show');
+  let p = 0;
+  const step = 100 / (durationMs / 50);
+  const iv = setInterval(() => {
+    p = Math.min(p + step, 100);
+    bar.style.width = p + '%';
+    pct.textContent = Math.floor(p) + '% — ' + msgs[Math.min(Math.floor(p/25), 4)];
+    if (p >= 100) {
+      clearInterval(iv);
+      setTimeout(() => {
+        overlay.classList.remove('show');
+        bar.style.width = '0%';
+        pct.textContent = '0%';
+        onComplete();
+      }, 400);
+    }
+  }, 50);
+}
+
+function doCheck() {
+  if (!validate()) return;
+  const btn = document.getElementById('btn-chk');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin-sm"></div> Checking Eligibility...';
+  hideAll();
+  runFetchOverlay(5000, () => {
+    btn.disabled = false;
+    btn.innerHTML = 'Check Allocation →';
+    if (DB[getKey()]) showEligible();
+    else {
+      showRes('r-ne');
+      document.getElementById('r-ne').scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }
+  });
+}
+
+function showUrl() {
+  showRes('r-url');
+  document.getElementById('r-url').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function doFetch2() {
+  const u = document.getElementById('i-url').value.trim();
+  if (!u) return;
+  runFetchOverlay(5000, () => {
+    DB[getKey()] = true;
+    showEligible();
+  });
+}
+
+function showEligible() {
+  showRes('r-elig');
+  const n = document.getElementById('sn1');
+  n.textContent = '✓'; n.classList.remove('active'); n.classList.add('done');
+  // Set Twitter handle
+  const tw = document.getElementById('i-tw').value.trim();
+  const handle = tw ? (tw.startsWith('@') ? tw : '@' + tw) : '@user';
+  document.getElementById('elig-handle').textContent = handle;
+  // Scroll card to eligible section
+  setTimeout(() => {
+    document.getElementById('r-elig').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 100);
+}
+</script>
+</body>
+</html>
